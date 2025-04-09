@@ -66,6 +66,8 @@ plot(nov3)
 data(nov4)
 plot(nov4)
 
+data(nov7)
+plot(nov7)
 ```
 
 
@@ -113,6 +115,12 @@ plot(j1)
 plot(j4)
 hist(j1, main="Band 1 - Blue of Landsat")	
 boxplot(j1, main="Band 1 - Blue of Landsat")		
+
+data(nov1)
+plot(nov1)
+n1 <- rast(nov1)
+hist(n1)
+
 ```
 
 
@@ -133,8 +141,8 @@ splom(myCIR, varname.cex = 1) # scatter plot matrix
 
 
 ## better
-plotRGB(myRGB)
-plotRGB(myCIR)
+plotRGB(myRGB, stretch = "hist")
+plotRGB(myCIR,  stretch = "hist")
 ```
 
 
@@ -174,7 +182,7 @@ filename <- tempfile(fileext = ".html")
 htmlwidgets::saveWidget(rglwidget(), filename)
 browseURL(filename)
 
-plot3D(dem, drape = raster(july4)) ## should drape image j4 over DEM, if problematic try in .R script and watch for a pop-up widget. Ask Adela to demo!
+plot3D(dem, drape = raster(nov7)) ## should drape image j4 over DEM, if problematic try in .R script and watch for a pop-up widget. Ask Adela to demo!
 
 ```
 
@@ -231,7 +239,7 @@ ndvi
 plot(ndvi)
 
 # uncomment and run in 3D
-# plot3D(dem, drape=ndvi, zfac = 1.5)
+plot3D(dem, drape = raster(ndvi), zfac = 1.5)
 
 ### remove values below zero
 ndvi[ndvi <= 0] <- NA
@@ -362,9 +370,10 @@ And because we have it in the data/ folder, try with this larger example.
 r <- rast("../data/myDem_subset.tif")
 r
 plot(r)
-
+?itcIMG()
 se_large <- itcIMG(r, epsg=25829, ischm=T) # can be a bit slow (2-3mins)
 summary(se_large)
+plot(se_large)
 plot(r);plot(se_large,axes=F, add=TRUE)
 
 # Adjust 'th' argument for excessive capture of small growth
@@ -400,6 +409,9 @@ leaflet() %>%
  # addProviderTiles("Esri.WorldImagery") %>% 
   addRasterImage(r) %>% 
   addPolygons(data=rse4326, weight = 1, color = "black" )   # Neat :)
+
+library(mapview)
+mapview(r)
 ```
 
 
@@ -429,6 +441,7 @@ train <- read_sf("../data/train_aarhus.geojson") %>%
 st_crs(train)
 unique(train$Type)
 train <- train[-7,]
+
 train$Type <- factor(train$Type, levels = c("building", "forest", "paved", "water"))
 
 # plot input data
@@ -449,6 +462,7 @@ sc$modelFit
 
 ```{r plot-aarhus-result}
 # plotting: convert class IDs to class labels (factorize) and plot
+library(ggplot2)
 r <- as.factor(sc$map)
 levels(r) <- data.frame(ID = 1:4, class_supervised = levels(train$Type))
 ggR(r, geom_raster = T, forceCat = T) + scale_fill_manual(values = c("sandybrown","darkgreen", "yellow",  "blue"))
@@ -486,6 +500,8 @@ clicks <- click(a, n = 4, cells = TRUE)  # 'n' = how many points to click
 
 # View clicked cell IDs and coordinates
 print(clicks)
+
+
 
 ```
 
